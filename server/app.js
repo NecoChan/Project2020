@@ -1,11 +1,5 @@
-// Подключим внешние зависимости из node_modules.
-// Каждая библиотека возвращает некоторый объект через module.exports, точно так
-// же, как мы это сделали в models.js. Функция require динамически находит
-// модуль, исполняет его код и возвращает его module.exports нам.
 const express = require('express');
 const bodyParser = require('body-parser');
-
-// Подключаем наш модуль models.js
 const models = require('./models');
 
 
@@ -36,12 +30,12 @@ class Application {
         // функция. Так следует делать всегда при передаче метода как аргумента.
         // Каждый обработчик принимает два аргумента - объекты запроса и ответа,
         // обозначаемые как req и res.
-        app.get('/rooms', this.roomSearchHandler.bind(this));
-        app.post('/rooms', jsonParser, this.createRoomHandler.bind(this));
+        app.get('/nodes', this.getNodes.bind(this));
+        // app.post('/rooms', jsonParser, this.createRoomHandler.bind(this));
         // Имя после двоеточия - параметр, принимающий произвольное значение.
         // Такие параметры доступны в req.params
-        app.get('/rooms/:roomId/messages', this.getMessagesHandler.bind(this));
-        app.post('/rooms/:roomId/messages', jsonParser, this.postMessageHandler.bind(this));
+        // app.get('/rooms/:roomId/messages', this.getMessagesHandler.bind(this));
+        // app.post('/rooms/:roomId/messages', jsonParser, this.postMessageHandler.bind(this));
     }
 
     // Обработчик создания комнаты
@@ -99,6 +93,31 @@ class Application {
 
             res.json(response);
         }
+    }
+
+    getNodes (req, res) {
+        let response = {
+            nodes: [
+                {
+                    id: 1,
+                    name: "name",
+                    val: "val",
+                },
+                {
+                    id: 2,
+                    name: "name",
+                    val: "val",
+                }
+            ],
+            links: [
+                {
+                    source: 1,
+                    target: 2
+                }
+            ]
+        };
+
+        res.json(response)
     }
 
     roomSearchHandler (req, res) {
