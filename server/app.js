@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const models = require('./models');
+const neo4j = require('neo4j-driver');
 
 
 class Application {
@@ -10,6 +11,15 @@ class Application {
         // Создаем ChatRoomManager, экспортированный из models.js
         this.manager = new models.ChatRoomManager();
         this.attachRoutes();
+
+
+        console.log("neo4j: " + neo4j);
+
+        var graphenedbURL = process.env['GRAPHENEDB_BOLT_URL'];
+        var graphenedbUser = process.env.GRAPHENEDB_BOLT_USER;
+        var graphenedbPass = process.env.GRAPHENEDB_BOLT_PASSWORD;
+
+        this.driver = neo4j.driver(graphenedbURL, neo4j.auth.basic(graphenedbUser, graphenedbPass));
     }
 
     attachRoutes () {
@@ -31,6 +41,7 @@ class Application {
         // Каждый обработчик принимает два аргумента - объекты запроса и ответа,
         // обозначаемые как req и res.
         app.get('/nodes', this.getNodes.bind(this));
+        app.get('/nodes-test', this.getNodesTest.bind(this));
         // app.post('/rooms', jsonParser, this.createRoomHandler.bind(this));
         // Имя после двоеточия - параметр, принимающий произвольное значение.
         // Такие параметры доступны в req.params
@@ -116,6 +127,27 @@ class Application {
                 }
             ]
         };
+
+        res.json(response)
+    }
+
+    getNodesTest (req, res) {
+
+        let session = this.driver.session();
+
+        let response = null;
+
+        session
+            .run("CREATE (n {hello: 'World'}) RETURN n.name")
+            .then(function(result) {
+                result.records.forEach(function(record) {
+                    console.log(record)
+                });
+                response = result.records;
+            })
+            .catch(function(error) {
+                console.log(error);
+            }).then(() => session.close());
 
         res.json(response)
     }
