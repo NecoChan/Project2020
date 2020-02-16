@@ -6,6 +6,6 @@ require('dotenv').config({path: __dirname + '/.env'})
 
 let app = new Application();
 
-app.expressApp.listen(config.port, config.host, function() {
-    console.log(`App listening at port ${config.port}`);
+app.expressApp.listen(process.env.PORT, config.host, function() {
+    console.log(`App listening at port ${process.env.PORT}`);
 });
