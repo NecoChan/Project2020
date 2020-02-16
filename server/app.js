@@ -144,12 +144,11 @@ class Application {
                     console.log(record)
                 });
                 response = result.records;
+                res.json(response)
             })
             .catch(function(error) {
                 console.log(error);
             }).then(() => session.close());
-
-        res.json(response)
     }
 
     roomSearchHandler (req, res) {
